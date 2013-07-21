@@ -1,0 +1,5 @@
+[21-Jul-2013 13:17:24] PHP Fatal error:  Cannot use object of type WP_Query as array in /home/chriswd/public_html/wp-content/plugins/simple-magazine/issue.php on line 75
+[21-Jul-2013 13:20:24] PHP Catchable fatal error:  Object of class WP_Post could not be converted to string in /home/chriswd/public_html/wp-content/plugins/simple-magazine/issue.php on line 153
+[21-Jul-2013 13:20:40] PHP Fatal error:  Cannot use object of type WP_Post as array in /home/chriswd/public_html/wp-content/plugins/simple-magazine/issue.php on line 94
+[21-Jul-2013 13:20:51] PHP Catchable fatal error:  Object of class WP_Post could not be converted to string in /home/chriswd/public_html/wp-content/plugins/simple-magazine/issue.php on line 155
+[21-Jul-2013 13:21:10] PHP Catchable fatal error:  Object of class WP_Post could not be converted to string in /home/chriswd/public_html/wp-content/plugins/simple-magazine/issue.php on line 155

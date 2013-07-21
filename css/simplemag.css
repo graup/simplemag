@@ -1,0 +1,88 @@
+@import url(http://fonts.googleapis.com/css?family=Merriweather:400,700,300italic,300);
+
+body,html{
+	background: #f8f8f5;
+	color: #333;
+	font-size: 24px;
+	margin: 0;
+	padding: 0;
+	font-size: 18px;
+	font-family: 'Merriweather', serif;
+	line-height: 1.8em;
+}
+
+
+
+#page{
+	max-width: 860px;
+	margin: 30px auto;
+	box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.4);
+	background: #fff;
+}
+#page.noArrows{
+	
+}
+#page.firstPage{
+	
+}
+#page.lastPage{
+	
+}
+
+#page .header{
+    background: #7554d9;
+    background-size: cover;
+    background-position:center center;
+    position: relative;
+    height: 250px;
+}
+#page .header h1{
+    color:#fff;
+    padding: 25px;
+    margin: 0px;
+    position: absolute;
+    bottom:0px;
+    text-shadow: 0px 0px 10px rgba(0,0,0,0.6);
+    font-size: 4em;
+    line-height: 1em;
+}
+#page .content{
+    padding:35px;
+    min-height: 300px;
+}
+
+
+
+#prevPage,#nextPage{
+	top: 45%;
+	position: fixed;
+	background-repeat: no-repeat;
+	width: 60px;
+	height: 77px;
+	cursor: pointer;
+	z-index: 10000;
+}
+#prevPage{
+	left: 20px;
+	background-image: url(/ustudent/2012/december/gfx/arrow-l.png);
+}
+#nextPage{
+	right: 20px;
+	background-image: url(/ustudent/2012/december/gfx/arrow-r.png);
+}
+
+
+.fitToWidth{ width: 100%; }
+
+
+.toc{
+    font-size: 1.5em;
+}
+.toc li{
+    
+}
+
+
+.hidden{
+    display: none;
+}
