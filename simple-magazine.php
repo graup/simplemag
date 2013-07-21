@@ -10,7 +10,7 @@ Description: A simple magazine style plugin
 Author: Christoffer Korvald
 Version: 1.0
 Author URI: http://christofferok.com/
-License: GPL2
+License: MIT
 */
 
 define('WP_DEBUG', true);
@@ -171,13 +171,11 @@ function simplemag_article_custom_column($column_name, $post_ID) {
 } 
 
 
-
-
 /* This is only done on activation */
 register_activation_hook( __FILE__, 'simplemag_activate' );
 function simplemag_activate() {
     global $wp_rewrite;
-    add_rewrite_rule('issue/([0-9A-Za-z-]*)/?([0-9A-Za-z-]*)?/?',SIMPLEMAG_URL.'/issue.php?issue=$1&article=$2','top');
+    add_rewrite_rule('issue/([0-9A-Za-z-]*)/?([0-9A-Za-z-]*)?/?',substr(SIMPLEMAG_PATH,1).'issue.php?issue=$1&article=$2','top');
     flush_rewrite_rules();
 }
 
