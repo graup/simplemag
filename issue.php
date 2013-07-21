@@ -141,8 +141,6 @@ else{
     
     </style>
 
-
-    <?php wp_head(); ?>
 </head>
 <body>
     		
@@ -252,7 +250,6 @@ else{
 		}
 	</script>
 	
-	<?php wp_footer(); ?>
 	
 </body>
 </html>
