@@ -64,11 +64,11 @@ body,html{
 }
 #prevPage{
 	left: 20px;
-	background-image: url(/ustudent/2012/december/gfx/arrow-l.png);
+	background-image: url(../images/arrow-l.png);
 }
 #nextPage{
 	right: 20px;
-	background-image: url(/ustudent/2012/december/gfx/arrow-r.png);
+	background-image: url(../images/arrow-r.png);
 }
 
 
