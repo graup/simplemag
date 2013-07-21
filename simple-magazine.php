@@ -89,7 +89,7 @@ function create_simplemag() {
             ),
             'hierarchical' => false,
             'public' => false,
-            'publicly_queryable' => true,
+            'publicly_queryable' => false,
             'show_ui' => true,
             'supports' => array( 'title', 'editor','author',  'thumbnail','page-attributes' ),
             'taxonomies' => array( '' ),
@@ -119,6 +119,7 @@ function create_simplemag() {
             ),
             'hierarchical' => false,
             'public' => true,
+            'publicly_queryable' => false,
             'supports' => array( 'title', 'excerpt',  'thumbnail'),
             'taxonomies' => array( '' ),
             'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
@@ -134,17 +135,43 @@ function create_simplemag() {
     );
     
     
-    if (isset( $_GET['post_type']) && ('simplemag-issue' == $_GET['post_type'] || 'simplemag-article' == $_GET['post_type'] )){
-		wp_enqueue_style( 'simplemag_admin_style', SIMPLEMAG_URL . '/css/simplemag-admin.css');
-	}
-				
     
+}
+
+
+function cleanPermalink($str, $replace=array(), $delimiter='-') {
+	if( !empty($replace) ) {
+		$str = str_replace((array)$replace, ' ', $str);
+	}
+	
+	$clean = str_replace("æ","ae",$clean);
+	$clean = str_replace("ø","oe",$clean);
+	$clean = str_replace("å","a",$clean);
+
+	$clean = iconv('UTF-8', 'ASCII//TRANSLIT', $str);
+	$clean = preg_replace("/[^a-zA-Z0-9\/_|+ -]/", '', $clean);
+	$clean = strtolower(trim($clean, '-'));
+	$clean = preg_replace("/[\/_|+ -]+/", $delimiter, $clean);
+
+	return $clean;
+}
+
+add_filter('name_save_pre', 'save_name');
+function save_name($name) {
+	global $post;
+	if($post->post_type == 'simplemag-article'){
+        $post->post_name = cleanPermalink($post->post_title);
+          return $post->post_name;
+	}
+	return $name;
 }
 
 
 
 add_action( 'init', 'create_simplemag' );
 add_action( 'save_post', 'add_simplemag_fields', 10, 2 );
+
+
 
 
 add_action( 'admin_menu', 'simplemag_plugin_menu' );
@@ -167,7 +194,7 @@ function simplemag_article_custom_column($column_name, $post_ID) {
         $issue = get_post($issueID, ARRAY_A);
         //var_dump($issue);
         echo $issue['post_title'];
-    }  
+    } 
 } 
 
 
@@ -175,6 +202,7 @@ function simplemag_article_custom_column($column_name, $post_ID) {
 register_activation_hook( __FILE__, 'simplemag_activate' );
 function simplemag_activate() {
     global $wp_rewrite;
+    create_simplemag();
     add_rewrite_rule('issue/([0-9A-Za-z-]*)/?([0-9A-Za-z-]*)?/?',substr(SIMPLEMAG_PATH,1).'issue.php?issue=$1&article=$2','top');
     flush_rewrite_rules();
 }
