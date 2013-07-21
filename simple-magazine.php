@@ -31,20 +31,20 @@ class SimpleMagazine{
     
     public function addActions(){
     
-        add_action( 'init', array($this,'create_simplemag') );
+        add_action('init', array($this,'registerPostType') );
         
         if(is_admin()){
-            add_action( 'save_post', array($this,'add_simplemag_fields'), 10, 2 );
+            add_action('save_post', array($this,'add_simplemag_fields'), 10, 2 );
     
     
-            add_action( 'admin_init', array($this,'simplemag_admin') );
-            add_action( 'admin_menu', array($this,'simplemag_plugin_menu') );
+            add_action('admin_init', array($this,'admin_init') );
+            add_action('admin_menu', array($this,'addAdminMenu') );
             
-            add_filter('manage_simplemag-article_posts_columns', array($this,'simplemag_article_columns'), 10);  
-            add_action('manage_simplemag-article_posts_custom_column', array($this,'simplemag_article_custom_column'), 10, 2); 
+            add_filter('manage_simplemag-article_posts_columns', array($this,'article_columns'), 10);  
+            add_action('manage_simplemag-article_posts_custom_column', array($this,'article_custom_column'), 10, 2); 
             add_filter('name_save_pre', array($this,'save_name'));
-            register_deactivation_hook( __FILE__, array($this,'simplemag_deactivate') );
-            register_activation_hook( __FILE__, array($this,'simplemag_activate') );
+            register_deactivation_hook( __FILE__, array($this,'deactivate') );
+            register_activation_hook( __FILE__, array($this,'activate') );
             
             $magSettings = new SimpleMagazineSettings();
             	
@@ -54,7 +54,6 @@ class SimpleMagazine{
     
     
     public function add_simplemag_fields( $simplemag_id, $simplemag) {
-        // Check post type for movie reviews
         if ( $simplemag->post_type == 'simplemag-article' ) {
             // Store data in post meta table if present in post data
             if ( isset( $_POST['simplemag_issue'] ) && $_POST['simplemag_issue'] != '' ) {
@@ -63,15 +62,15 @@ class SimpleMagazine{
         }
     }
     
-    public function simplemag_meta_box() {
-        add_meta_box( 'simplemag_meta_box',
+    public function article_meta_box() {
+        add_meta_box( 'article_meta_box',
             'Article Details',
-            'display_simplemag_meta_box',
+            array($this,'display_simplemag_meta_box'),
             'simplemag-article', 'normal', 'high'
         );
     }
     
-    public function display_simplemag_meta_box( $simplemag_article ) {
+    public function display_article_meta_box( $simplemag_article ) {
         // Retrieve current name of the Director and Movie Rating based on review ID
         $issue = intval( get_post_meta( $simplemag_article->ID, 'simplemag_issue', true ));
         ?>
@@ -99,7 +98,7 @@ class SimpleMagazine{
         <?php
     }
     
-    public function create_simplemag() {
+    public function registerPostType() {
         register_post_type( 'simplemag-article',
             array(
                 'labels' => array(
@@ -126,7 +125,7 @@ class SimpleMagazine{
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
                 'show_in_menu' => 'simplemag',
-                'register_meta_box_cb' => 'simplemag_meta_box'
+                'register_meta_box_cb' => 'article_meta_box'
             )
         );
         
@@ -205,23 +204,23 @@ class SimpleMagazine{
     	}
     }
     
-    public function simplemag_admin(){
+    public function admin_init(){
         add_action( 'pre_get_posts', array($this,'simplemag_admin_style_post') );
         wp_enqueue_style( 'simplemag_admin_style', SIMPLEMAG_URL . '/css/simplemag-admin.css');    	
     }
     
     
-    public function simplemag_plugin_menu() {
+    public function addAdminMenu() {
     	add_menu_page(SIMPLEMAG_NAME,SIMPLEMAG_NAME, 'edit_pages', 'simplemag', null,SIMPLEMAG_URL.'/images/icon-16.png',9);
     }    
     
     // Custom column for issue on article
      
-    public function simplemag_article_columns($defaults) {  
+    public function article_columns($defaults) {  
         $defaults['issue'] = 'Issue';  
         return $defaults;  
     }  
-    public function simplemag_article_custom_column($column_name, $post_ID) {  
+    public function article_custom_column($column_name, $post_ID) {  
         if ($column_name == 'issue') {  
             $issueID = get_post_meta($post_ID, 'simplemag_issue', true); 
             $issue = get_post($issueID, ARRAY_A);
@@ -233,16 +232,16 @@ class SimpleMagazine{
     
     /* This is only done on activation */
     
-    public function simplemag_activate() {
+    public function activate() {
         global $wp_rewrite;
-        create_simplemag();
+        $this->registerPostType();
         add_rewrite_rule('issue/([0-9A-Za-z-]*)/?([0-9A-Za-z-]*)?/?',substr(SIMPLEMAG_PATH,1).'issue.php?issue=$1&article=$2','top');
         flush_rewrite_rules();
     }
     
     /* This is only done on deactivation */
     
-    public function simplemag_deactivate() {
+    public function deactivate() {
     	flush_rewrite_rules();
     }
         
