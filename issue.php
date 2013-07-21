@@ -53,7 +53,7 @@ elseif($articleName == 'toc'){
     while ( $articles->have_posts() ) :
     	$articles->the_post();
     	$post_data = get_post(get_the_ID(), ARRAY_A);
-    	$output .= '<li><a onclick="return gotoArticle('.get_the_ID().');" href="'.$post_data['post_name'].'"><div class="img article-'.get_the_ID().'""></div>'.get_the_title().'</a></li>';
+    	$output .= '<li><a onclick="return gotoArticle('.get_the_ID().');" href="'.$post_data['post_name'].'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
     	
     	if(!$next_post) $next_post = $post_data['post_name'];
     endwhile;
@@ -133,7 +133,7 @@ else{
             $articles->the_post();
             $img = wp_get_attachment_image_src(get_post_thumbnail_id(), 'full' );
         	echo '.article-'.get_the_ID().'{ ';
-        	echo 'background-image:url('.$img[0].') !important;';
+        	echo ($img[0])?'background-image:url('.$img[0].') !important;':'';
         	echo '}';
         endwhile;
         wp_reset_postdata();
