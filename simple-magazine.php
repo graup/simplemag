@@ -172,6 +172,20 @@ add_action( 'init', 'create_simplemag' );
 add_action( 'save_post', 'add_simplemag_fields', 10, 2 );
 
 
+add_action( 'admin_init', 'simplemag_admin' );
+
+function simplemag_admin(){
+    add_action( 'pre_get_posts', 'simplemag_admin_style_post' );
+    wp_enqueue_style( 'simplemag_admin_style', SIMPLEMAG_URL . '/css/simplemag-admin.css');
+}
+
+function simplemag_admin_style_post(){
+    $screen = get_current_screen();
+    if ($screen && ('simplemag-issue' == $screen->id || 'simplemag-article' == $screen->id )){
+		remove_editor_styles(); //Prevent the current theme from messing up the editor style
+	}
+}
+
 
 
 add_action( 'admin_menu', 'simplemag_plugin_menu' );
