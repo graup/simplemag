@@ -2,6 +2,12 @@
 require_once('../../../wp-load.php' );
 
 wp();
+
+
+function articleUrl($articleName){
+    global $issue;
+    return '/issue/'.$issue['name'].'/'.$articleName;
+}
 	
 $issueSlug = $_GET['issue'];
 $articleName = $_GET['article'];
@@ -36,7 +42,7 @@ elseif(empty($articleName) || $articleName == 'cover'){
     $prev_post = null;
     $next_post = 'toc';
     $output = '<div class="content" style="padding:0px;">
-    		    <a href="toc/"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
+    		    <a href="'.articleUrl('toc').'"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
     		</div>';
 }
 elseif($articleName == 'toc'){
@@ -53,7 +59,7 @@ elseif($articleName == 'toc'){
     while ( $articles->have_posts() ) :
     	$articles->the_post();
     	$post_data = get_post(get_the_ID(), ARRAY_A);
-    	$output .= '<li><a href="'.$post_data['post_name'].'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
+    	$output .= '<li><a href="'.articleUrl($post_data['post_name']).'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
     	
     	if(!$next_post) $next_post = $post_data['post_name'];
     endwhile;
@@ -142,8 +148,8 @@ else{
 
 </head>
 <body>		
-	<a href="<?php echo $prev_post; ?>" id="prevPage" <?php echo(!$prev_post)?' class="hidden"':'';?>></a>
-	<a href="<?php echo $next_post; ?>" id="nextPage" <?php echo(!$next_post)?' class="hidden"':'';?>></a>
+	<a href="<?php echo articleUrl($prev_post); ?>" id="prevPage" <?php echo(!$prev_post)?' class="hidden"':'';?>></a>
+	<a href="<?php echo articleUrl($next_post); ?>" id="nextPage" <?php echo(!$next_post)?' class="hidden"':'';?>></a>
 	<div id="loadContent">
     	<div id="page">
             <?php echo $output; ?>
