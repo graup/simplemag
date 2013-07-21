@@ -36,7 +36,7 @@ elseif(empty($articleName) || $articleName == 'cover'){
     $prev_post = null;
     $next_post = 'toc';
     $output = '<div class="content" style="padding:0px;">
-    		    <a onclick="gotoPage(1);" href="toc/"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
+    		    <a href="toc/"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
     		</div>';
 }
 elseif($articleName == 'toc'){
@@ -53,7 +53,7 @@ elseif($articleName == 'toc'){
     while ( $articles->have_posts() ) :
     	$articles->the_post();
     	$post_data = get_post(get_the_ID(), ARRAY_A);
-    	$output .= '<li><a onclick="return gotoArticle('.get_the_ID().');" href="'.$post_data['post_name'].'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
+    	$output .= '<li><a href="'.$post_data['post_name'].'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
     	
     	if(!$next_post) $next_post = $post_data['post_name'];
     endwhile;
@@ -105,7 +105,6 @@ else{
 	<meta name="apple-itunes-app" content="app-id=556057345">
 	
 	<link rel="stylesheet" type="text/css" href="<?php echo SIMPLEMAG_URL; ?>css/simplemag.css" />
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
 	<script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -142,8 +141,7 @@ else{
     </style>
 
 </head>
-<body>
-    		
+<body>		
 	<a href="<?php echo $prev_post; ?>" id="prevPage" <?php echo(!$prev_post)?' class="hidden"':'';?>></a>
 	<a href="<?php echo $next_post; ?>" id="nextPage" <?php echo(!$next_post)?' class="hidden"':'';?>></a>
 	<div id="loadContent">
@@ -151,105 +149,5 @@ else{
             <?php echo $output; ?>
     	</div>
 	</div>
-	<script>
-	    var ajaxurl = "http:\/\/christofferok.com\/wp-admin\/admin-ajax.php";
-	    var issue = <?php echo json_encode($issue); ?>;
-		var currentPage = 0;
-        <?php
-        $postIDs = array('"cover"','"TOC"');
-        // Get all issues
-        $args = array(
-        'post_type' => 'simplemag-article',
-        'meta_key'=> 'simplemag_issue',
-          'meta_value' => $issue['id'],
-          'orderby'=> 'menu_order'
-          );
-        $articles = new WP_Query($args);
-        while ( $articles->have_posts() ) :
-        	$articles->the_post();
-        	$postIDs[] = '"'.get_the_ID().'"';
-        endwhile;
-        ?>
-        var pages = [<?php echo implode(",", $postIDs); ?>];
-        $("#prevPage").click(function(){ return true; prevPage(); return false; });
-        $("#nextPage").click(function(){ return true; nextPage(); return false; });
-        
-        
-        function nextPage()
-        {
-        	if(currentPage < pages.length-1)
-        	{
-        	    console.log(currentPage);
-        		currentPage++;
-	        	loadArticle(pages[currentPage]);
-        	}
-        }
-        
-        function prevPage()
-        {
-        	if(currentPage > 0)
-        	{
-	        	loadArticle(pages[--currentPage]);
-        	}
-        }
-        
-        function gotoPage(pageNumber)
-        {
-	        currentPage = pageNumber;
-	        loadArticle(pages[currentPage]);
-        }
-        
-        function gotoArticle(articleID)
-        {
-            return true; //Disable ajax navigation
-            
-            page = 0;
-            for(p in pages){
-                if(pages[p] == articleID){
-                    currentPage = page;
-                    console.log(page,pages);
-        	        loadArticle(pages[currentPage]);
-        	        return false;
-                }
-                page++;
-            }
-            return false;
-	        
-        }
-        
-		function loadArticle(articleID)
-		{
-		    var data = {
-        		action: 'getsimplemagPage',
-        		issue: issue.id,
-        		postID: articleID
-        	};
-        	// We can also pass the url value separately from ajaxurl for front end AJAX implementations
-        	jQuery.post(ajaxurl, data, function(response) {
-        		$("#page").html(response.html);
-        		console.log(response);
-        		window.history.pushState(null,issue.title+" - "+response.title, "/issue/"+issue.name+"/"+response.name);
-        	},'json');
-			scrollToTop();
-			showHideArrows();
-		}
-		
-		function scrollToTop()
-		{
-			$('body,html').animate({ scrollTop: 0 }, 500);
-		}
-		
-		function showHideArrows()
-		{
-			if(currentPage <= 0){ $("#prevPage").hide(); }
-			else{ $("#prevPage").show(); }
-			
-			if(currentPage >= (pages.length-1)){ $("#nextPage").hide(); }
-			else{ $("#nextPage").show(); }
-			
-		}
-	</script>
-	
-	
 </body>
 </html>
