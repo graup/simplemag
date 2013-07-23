@@ -65,7 +65,7 @@ class SimpleMagazine{
     public function article_meta_box() {
         add_meta_box( 'article_meta_box',
             'Article Details',
-            array($this,'display_simplemag_meta_box'),
+            array($this,'display_article_meta_box'),
             'simplemag-article', 'normal', 'high'
         );
     }
@@ -125,7 +125,7 @@ class SimpleMagazine{
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
                 'show_in_menu' => 'simplemag',
-                'register_meta_box_cb' => 'article_meta_box'
+                'register_meta_box_cb' => array($this,'article_meta_box')
             )
         );
         
