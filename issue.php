@@ -8,99 +8,103 @@ function articleUrl($articleName){
     global $issue;
     return '/issue/'.$issue['name'].'/'.$articleName;
 }
-	
+
 $issueSlug = $_GET['issue'];
 $articleName = $_GET['article'];
 
-$args = array(
-    'post_type' => 'simplemag-issue',
-    'name'=> $issueSlug
-);
-$issueQ = new WP_Query($args);
-$issueQ->the_post();
+$issue = null;
 
-$issue = array();
-$cover = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
-$issue['cover'] = $cover[0];
-$issue['title'] = get_the_title();
-$issue['id'] = get_the_ID();
-$issue['name'] = $issueSlug;
-
-
-$output = '';
-$title = $issue['title'];
-$prev_post = null;
-$next_post = null;
-
-if(!$issue['id']){
-     $output .= '<div class="header"><h1>Error</h1></div>';
-     $output .= '<div class="content">';
-     $output .= 'No issue with the name "'.$issueSlug.'" was found';
-     $output .= '</div>';
-}
-elseif(empty($articleName) || $articleName == 'cover'){
+if($issueSlug){
+    $args = array(
+        'post_type' => 'simplemag-issue',
+        'name'=> $issueSlug
+    );
+    $issueQ = new WP_Query($args);
+    $issueQ->the_post();
+    
+    $issue = array();
+    $cover = wp_get_attachment_image_src( get_post_thumbnail_id(), 'full' );
+    $issue['cover'] = $cover[0];
+    $issue['title'] = get_the_title();
+    $issue['id'] = get_the_ID();
+    $issue['name'] = $issueSlug;
+    
+    
+    $output = '';
+    $title = $issue['title'];
     $prev_post = null;
-    $next_post = 'toc';
-    $output = '<div class="content" style="padding:0px;">
-    		    <a href="'.articleUrl('toc').'"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
-    		</div>';
-}
-elseif($articleName == 'toc'){
-    $args = array(
-    'post_type' => 'simplemag-article',
-    'meta_key'=> 'simplemag_issue',
-      'meta_value' => $issue['id'],
-      'orderby'=> 'menu_order'
-      );
-    $articles = new WP_Query($args);
-    $output .= '<div class="header"><h1>Table of Contents</h1></div>';
-    $output .= '<div class="content">';
-    $output .= '<ol class="toc">';
-    while ( $articles->have_posts() ) :
-    	$articles->the_post();
-    	$post_data = get_post(get_the_ID(), ARRAY_A);
-    	$output .= '<li><a href="'.articleUrl($post_data['post_name']).'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
-    	
-    	if(!$next_post) $next_post = $post_data['post_name'];
-    endwhile;
-    $output .= '</ol>';
-    $output .= '</div>';
+    $next_post = null;
     
-    $prev_post = 'cover';
-    $title .= ' - Table of Contents';
+    if(!$issue['id']){
+         $output .= '<div class="header"><h1>Error</h1></div>';
+         $output .= '<div class="content">';
+         $output .= 'No issue with the name "'.$issueSlug.'" was found';
+         $output .= '</div>';
+    }
+    elseif(empty($articleName) || $articleName == 'cover'){
+        $prev_post = null;
+        $next_post = 'toc';
+        $output = '<div class="content" style="padding:0px;">
+        		    <a href="'.articleUrl('toc').'"><img src="'.$issue['cover'].'" class="fitToWidth" /></a>
+        		</div>';
+    }
+    elseif($articleName == 'toc'){
+        $args = array(
+        'post_type' => 'simplemag-article',
+        'meta_key'=> 'simplemag_issue',
+          'meta_value' => $issue['id'],
+          'orderby'=> 'menu_order'
+          );
+        $articles = new WP_Query($args);
+        $output .= '<div class="header"><h1>Table of Contents</h1></div>';
+        $output .= '<div class="content">';
+        $output .= '<ol class="toc">';
+        while ( $articles->have_posts() ) :
+        	$articles->the_post();
+        	$post_data = get_post(get_the_ID(), ARRAY_A);
+        	$output .= '<li><a href="'.articleUrl($post_data['post_name']).'"><div class="img article-'.get_the_ID().'"></div>'.get_the_title().'</a></li>';
+        	
+        	if(!$next_post) $next_post = $post_data['post_name'];
+        endwhile;
+        $output .= '</ol>';
+        $output .= '</div>';
+        
+        $prev_post = 'cover';
+        $title .= ' - Table of Contents';
+    }
+    else{
+        
+        $args = array(
+        'post_type' => 'simplemag-article',
+        'meta_key'=> 'simplemag_issue',
+          'meta_value' => $issue['id'],
+          'orderby'=> 'menu_order'
+          );
+        $articles = new WP_Query($args);
+        $i = 0;
+        while ( $articles->have_posts() ) :
+        	$articles->the_post();
+        	$post_data = get_post(get_the_ID(), ARRAY_A);
+        	$temp = $post_data;
+        	
+            if($articleName == $post_data['post_name']){
+                $output .= '<div class="header article-'.get_the_ID().'">';
+                $output .= '<h1>'.get_the_title().'</h1>';
+                $output .= '</div>';
+                $output .= '<div class="content">';
+                $output .= get_the_content();
+                $output .= '</div>';
+                
+                $title .= ' - '.get_the_title();
+                
+                $prev_post = $articles->posts[$i-1]->post_name;
+                $next_post = $articles->posts[$i+1]->post_name;
+            }
+            $i++;
+        endwhile;
+        if(!$prev_post) $prev_post = 'toc';
+    } 
 }
-else{
-    
-    $args = array(
-    'post_type' => 'simplemag-article',
-    'meta_key'=> 'simplemag_issue',
-      'meta_value' => $issue['id'],
-      'orderby'=> 'menu_order'
-      );
-    $articles = new WP_Query($args);
-    $i = 0;
-    while ( $articles->have_posts() ) :
-    	$articles->the_post();
-    	$post_data = get_post(get_the_ID(), ARRAY_A);
-    	$temp = $post_data;
-    	
-        if($articleName == $post_data['post_name']){
-            $output .= '<div class="header article-'.get_the_ID().'">';
-            $output .= '<h1>'.get_the_title().'</h1>';
-            $output .= '</div>';
-            $output .= '<div class="content">';
-            $output .= get_the_content();
-            $output .= '</div>';
-            
-            $title .= ' - '.get_the_title();
-            
-            $prev_post = $articles->posts[$i-1]->post_name;
-            $next_post = $articles->posts[$i+1]->post_name;
-        }
-        $i++;
-    endwhile;
-    if(!$prev_post) $prev_post = 'toc';
-} 
 
 ?><!DOCTYPE html>
 <html>
@@ -130,27 +134,29 @@ else{
 
 <style>
     <?php
-    $args = array(
-        'post_type' => 'simplemag-article',
-        'meta_key'=> 'simplemag_issue',
-          'meta_value' => $issue['id'],
-          'orderby'=> 'menu_order'
-          );
-        $articles = new WP_Query($args);
-        while ( $articles->have_posts() ) :
-            $articles->the_post();
-            $img = wp_get_attachment_image_src(get_post_thumbnail_id(), 'full' );
-        	echo '.article-'.get_the_ID().'{ ';
-        	echo ($img[0])?'background-image:url('.$img[0].') !important;':'';
-        	echo '}';
-        endwhile;
-        wp_reset_postdata();
+    if($issue){
+        $args = array(
+            'post_type' => 'simplemag-article',
+            'meta_key'=> 'simplemag_issue',
+              'meta_value' => $issue['id'],
+              'orderby'=> 'menu_order'
+              );
+            $articles = new WP_Query($args);
+            while ( $articles->have_posts() ) :
+                $articles->the_post();
+                $img = wp_get_attachment_image_src(get_post_thumbnail_id(), 'full' );
+            	echo '.article-'.get_the_ID().'{ ';
+            	echo ($img[0])?'background-image:url('.$img[0].') !important;':'';
+            	echo '}';
+            endwhile;
+            wp_reset_postdata();
+    }
     ?>
-    
     </style>
 
 </head>
-<body>		
+<body>
+    <?php if($issue) { ?>
 	<a href="<?php echo articleUrl($prev_post); ?>" id="prevPage" <?php echo(!$prev_post)?' class="hidden"':'';?>></a>
 	<a href="<?php echo articleUrl($next_post); ?>" id="nextPage" <?php echo(!$next_post)?' class="hidden"':'';?>></a>
 	<div id="loadContent">
@@ -158,5 +164,32 @@ else{
             <?php echo $output; ?>
     	</div>
 	</div>
+	<?php } else { ?>
+	    <div class="main">
+    	    <header>
+    			<h1>All issues</h1>
+    		</header>
+    	    <div class="issues">
+    			<?php
+    			$args = array(
+                    'post_type' => 'simplemag-issue'
+                    );
+            	$issues = new WP_Query($args);
+                while ( $issues->have_posts() ) :
+                    $issues->the_post();
+                    $img = wp_get_attachment_image_src(get_post_thumbnail_id(), 'medium' );
+                	echo '<div class="issue">
+        				<div>
+        					<a href="'.get_permalink().'"><img class="cover" src="'.$img[0].'" /></a>
+        					<h2>'.get_the_title().'</h2>
+        					<div class="info">'.get_the_excerpt().'</div>
+        				</div>
+        			</div>';
+                endwhile;
+    			?>
+    		</div>
+	    </div>
+	<?php } ?>
+	
 </body>
 </html>

@@ -77,3 +77,59 @@ body,html{
 .hidden{
     display: none;
 }
+
+
+
+
+
+
+/* List of all issues */
+
+.main{
+	margin: 10px auto 40px auto;
+	width: 800px;
+}
+
+header{
+	text-align: center;
+	margin-top: 80px;
+}
+header h1{
+	font-size: 2em;
+}
+header .logo{
+	height: 190px;
+}
+
+footer{
+	text-align: center;
+	clear: both;
+	padding: 20px;
+	display: none;
+}
+
+.issues{
+	clear: both;
+	text-align: center;
+}
+
+.issues .issue {
+	width: 33%;
+	display: inline-block;
+	vertical-align: top;
+}
+.issues .issue > div{
+	margin: 20px;
+}
+.issues .issue .cover{
+	width: 100%;
+	box-shadow: 0px 0px 40px rgba(50, 50, 50, 0.50);
+}
+.issues .issue h2{
+	margin:0px;
+	margin-bottom: 10px;
+	font-size: 1.4em;
+}
+.issues .issue .info{
+	
+}
