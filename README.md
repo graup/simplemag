@@ -1,7 +1,7 @@
-simplemag
+Simple Magazine
 =========
 
-Simple magazine plugin for WordPress
+Simple magazine plugin for WordPress. 
 
 How to use
 ---
@@ -13,3 +13,5 @@ How to use
 Screenshot
 ---
 <img src="http://s21.postimg.org/a2rbqh2jb/Screen_Shot_2013_07_24_at_5_52_08_PM.png"/>
+
+
