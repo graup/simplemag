@@ -167,7 +167,8 @@ if($issueSlug){
 	<?php } else { ?>
 	    <div class="main">
     	    <header>
-    			<h1>All issues</h1>
+    	        <?php echo ($magazineName = get_option('simplemag-magazine-name'))?'<h1>'.$magazineName.'</h1>':''; ?>
+    			<h2>All issues</h2>
     		</header>
     	    <div class="issues">
     			<?php

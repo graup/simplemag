@@ -340,6 +340,15 @@ class SimpleMagazineSettings{
     	);	
     		
     	add_settings_field(
+    	    'simplemag-magazine-name', 
+    	    'Magazine name', 
+    	    array($this, 'createSettingsField'), 
+    	    'test-setting-admin',
+    	    'setting_section_id',
+    	    array('id'=>'simplemag-magazine-name')				
+    	);
+    	
+    	add_settings_field(
     	    'simplemag-google-analytics', 
     	    'Google Analytics ID', 
     	    array($this, 'createSettingsField'), 
@@ -347,6 +356,7 @@ class SimpleMagazineSettings{
     	    'setting_section_id',
     	    array('id'=>'simplemag-google-analytics')				
     	);
+    	
     	add_settings_field(
     	    'simplemag-apple-app-id', 
     	    'Apple App ID', 
