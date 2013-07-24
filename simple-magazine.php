@@ -43,6 +43,9 @@ class SimpleMagazine{
             add_filter('manage_simplemag-article_posts_columns', array($this,'article_columns'), 10);  
             add_action('manage_simplemag-article_posts_custom_column', array($this,'article_custom_column'), 10, 2); 
             add_filter('name_save_pre', array($this,'save_name'));
+            add_filter( 'post_updated_messages', array($this,'post_updated_messages') );
+            
+            
             register_deactivation_hook( __FILE__, array($this,'deactivate') );
             register_activation_hook( __FILE__, array($this,'activate') );
             
@@ -51,6 +54,51 @@ class SimpleMagazine{
         }
     }
     
+    public function post_updated_messages($messages){
+        global $post,$post_ID;
+        if($post->post_type == 'simplemag-article')
+        {
+            $issuePermalink = get_permalink(get_post_meta($post_ID,'simplemag_issue',true));
+            $postPermalink = $issuePermalink.$post->post_name;
+            
+            $messages['simplemag-article'] = array(
+            0 => '', // Unused. Messages start at index 1.
+            1 => sprintf( __('Article updated. <a href="%s">View article</a>'), esc_url( $postPermalink ) ),
+            2 => __('Custom field updated.'),
+            3 => __('Custom field deleted.'),
+            4 => __('Article updated.'),
+            /* translators: %s: date and time of the revision */
+            5 => isset($_GET['revision']) ? sprintf( __('Article restored to revision from %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+            6 => sprintf( __('Article published. <a href="%s">View article</a>'), esc_url( $postPermalink ) ),
+            7 => __('Article saved.'),
+            8 => sprintf( __('Article submitted. <a target="_blank" href="%s">Preview article</a>'), esc_url( add_query_arg( 'preview', 'true', $postPermalink ) ) ),
+            9 => sprintf( __('Article scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview article</a>'),
+              // translators: Publish box date format, see http://php.net/date
+              date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( $postPermalink ) ),
+            10 => sprintf( __('Article draft updated. <a target="_blank" href="%s">Preview article</a>'), esc_url( add_query_arg( 'preview', 'true', $postPermalink ) ) ),
+          );
+        }
+        elseif($post->post_type == 'simplemag-issue')
+        {
+            $messages['simplemag-issue'] = array(
+            0 => '', // Unused. Messages start at index 1.
+            1 => sprintf( __('Issue updated. <a href="%s">View issue</a>'), esc_url( get_permalink() ) ),
+            2 => __('Custom field updated.'),
+            3 => __('Custom field deleted.'),
+            4 => __('Issue updated.'),
+            /* translators: %s: date and time of the revision */
+            5 => isset($_GET['revision']) ? sprintf( __('Issue restored to revision from %s'), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+            6 => sprintf( __('Issue published. <a href="%s">View issue</a>'), esc_url( get_permalink() ) ),
+            7 => __('Issue saved.'),
+            8 => sprintf( __('Issue submitted. <a target="_blank" href="%s">Preview issue</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink() ) ) ),
+            9 => sprintf( __('Issue scheduled for: <strong>%1$s</strong>. <a target="_blank" href="%2$s">Preview issue</a>'),
+              // translators: Publish box date format, see http://php.net/date
+              date_i18n( __( 'M j, Y @ G:i' ), strtotime( $post->post_date ) ), esc_url( get_permalink() ) ),
+            10 => sprintf( __('Issue draft updated. <a target="_blank" href="%s">Preview issue</a>'), esc_url( add_query_arg( 'preview', 'true', get_permalink() ) ) ),
+          );
+        }
+        return $messages;
+    }
     
     
     public function add_simplemag_fields( $simplemag_id, $simplemag) {
