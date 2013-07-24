@@ -189,7 +189,7 @@ class SimpleMagazine{
     public function save_name($name) {
     	global $post;
     	if($post->post_type == 'simplemag-article'){
-            $post->post_name = cleanPermalink($post->post_title);
+            $post->post_name = $this->cleanPermalink($post->post_title);
               return $post->post_name;
     	}
     	return $name;
