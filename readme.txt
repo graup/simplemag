@@ -30,9 +30,9 @@ or
 
 == Frequently asked questions ==
 
-= A question that someone might have =
+= How do I create a new magazine? =
 
-An answer to that question.
+Click on Simple Magazine, then Issues. Here you create an issue which you will be able to add articles to. 
 
 == Screenshots ==
 
