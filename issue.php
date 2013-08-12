@@ -1,16 +1,15 @@
 <?php
-require_once('../../../wp-load.php' );
-
-wp();
-
 
 function articleUrl($articleName){
     global $issue;
     return '/issue/'.$issue['name'].'/'.$articleName;
 }
 
-$issueSlug = $_GET['issue'];
-$articleName = $_GET['article'];
+
+$t = explode("/",$_SERVER['REQUEST_URI']);
+
+$issueSlug = $t[2];
+$articleName = $t[3];
 
 $issue = null;
 

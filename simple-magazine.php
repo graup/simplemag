@@ -32,6 +32,7 @@ class SimpleMagazine{
     public function addActions(){
     
         add_action('init', array($this,'registerPostType') );
+        add_filter('template_include',array($this, 'simplemag_template'), 1, 1);
         
         if(is_admin()){
             add_action('save_post', array($this,'add_simplemag_fields'), 10, 2 );
@@ -44,10 +45,6 @@ class SimpleMagazine{
             add_action('manage_simplemag-article_posts_custom_column', array($this,'article_custom_column'), 10, 2); 
             add_filter('name_save_pre', array($this,'save_name'));
             add_filter( 'post_updated_messages', array($this,'post_updated_messages') );
-            
-            
-            register_deactivation_hook( __FILE__, array($this,'deactivate') );
-            register_activation_hook( __FILE__, array($this,'activate') );
             
             $magSettings = new SimpleMagazineSettings();
             	
@@ -276,23 +273,18 @@ class SimpleMagazine{
             echo $issue['post_title'];
         } 
     } 
+
+
+    public function simplemag_template($template)
+    {
+        $t = explode("/",$_SERVER['REQUEST_URI']);
     
-    
-    /* This is only done on activation */
-    
-    public function activate() {
-        global $wp_rewrite;
-        $this->registerPostType();
-        add_rewrite_rule('issue/([0-9A-Za-z-]*)/?([0-9A-Za-z-]*)?/?',substr(SIMPLEMAG_PATH,1).'issue.php?issue=$1&article=$2','top');
-        flush_rewrite_rules();
+        if (isset($t[1]) && $t[1] == 'issue') {
+            return dirname(__FILE__) . '/issue.php';
+        }
+        return $template;
     }
-    
-    /* This is only done on deactivation */
-    
-    public function deactivate() {
-    	flush_rewrite_rules();
-    }
-        
+            
 }
 
 
