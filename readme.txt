@@ -10,8 +10,6 @@ License URI: http://opensource.org/licenses/MIT
 
 A simple Wordpress plugin to create magazine style issues.
 
-[https://github.com/christofferok/simplemag](https://github.com/christofferok/simplemag)
-
 == Description ==
 
 A simple Wordpress plugin to create magazine style issues.
