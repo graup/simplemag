@@ -121,8 +121,8 @@ class SimpleMagazine{
         ?>
         <table>
             <tr>
-                <td style="width: 100%">Issue</td>
-                <td>
+                <td>Issue</td>
+                <td style="width:100%">
                 <select name="simplemag_issue">
                 <option value="">- Select issue -</option>
                 <?php
@@ -165,8 +165,8 @@ class SimpleMagazine{
                 'public' => false,
                 'publicly_queryable' => false,
                 'show_ui' => true,
-                'supports' => array( 'title', 'editor','author',  'thumbnail','page-attributes' ),
-                'taxonomies' => array( '' ),
+                'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'page-attributes', 'excerpt' ),
+                'taxonomies' => array( 'category', 'post_tag' ),
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
                 'show_in_menu' => 'simplemag',
