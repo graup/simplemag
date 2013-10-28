@@ -23,7 +23,7 @@ define('SIMPLEMAG_BASENAME', 		plugin_basename( __FILE__ ) );
 define('SIMPLEMAG_REL_DIR', 		dirname( SIMPLEMAG_BASENAME ) );
 
 
-class SimpleMagazine{
+class SimpleMagazine {
 
     public function __construct(){
         $this->addActions();
@@ -32,11 +32,12 @@ class SimpleMagazine{
     public function addActions(){
     
         add_action('init', array($this,'registerPostType') );
-        add_filter('template_include',array($this, 'simplemag_template'), 1, 1);
+        add_filter('template_include', array($this, 'simplemag_template'), 1, 1);
         
+        register_activation_hook( __FILE__, array( $this, 'rewrite_flush' ) );
+
         if(is_admin()){
             add_action('save_post', array($this,'add_simplemag_fields'), 10, 2 );
-    
     
             add_action('admin_init', array($this,'admin_init') );
             add_action('admin_menu', array($this,'addAdminMenu') );
@@ -44,19 +45,23 @@ class SimpleMagazine{
             add_filter('manage_simplemag-article_posts_columns', array($this,'article_columns'), 10);  
             add_action('manage_simplemag-article_posts_custom_column', array($this,'article_custom_column'), 10, 2); 
             add_filter('name_save_pre', array($this,'save_name'));
-            add_filter( 'post_updated_messages', array($this,'post_updated_messages') );
+            add_filter('post_updated_messages', array($this,'post_updated_messages'));
             
             $magSettings = new SimpleMagazineSettings();
-            	
         }
     }
-    
+
+    public function rewrite_flush() {
+        flush_rewrite_rules();
+    }
+
     public function post_updated_messages($messages){
         global $post,$post_ID;
         if($post->post_type == 'simplemag-article')
         {
             $issuePermalink = get_permalink(get_post_meta($post_ID,'simplemag_issue',true));
             $postPermalink = $issuePermalink.$post->post_name;
+            $postPermalink = get_permalink($post_ID);
             
             $messages['simplemag-article'] = array(
             0 => '', // Unused. Messages start at index 1.
@@ -163,14 +168,16 @@ class SimpleMagazine{
                 ),
                 'hierarchical' => false,
                 'public' => false,
-                'publicly_queryable' => false,
+                'publicly_queryable' => true,
                 'show_ui' => true,
                 'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'page-attributes', 'excerpt' ),
                 'taxonomies' => array( 'category', 'post_tag' ),
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
+                'capability_type' => 'post',
                 'show_in_menu' => 'simplemag',
-                'register_meta_box_cb' => array($this,'article_meta_box')
+                'register_meta_box_cb' => array($this, 'article_meta_box'),
+                'rewrite' => array('slug' => 'article', 'with_front' => false)
             )
         );
         
@@ -193,17 +200,17 @@ class SimpleMagazine{
                 ),
                 'hierarchical' => false,
                 'public' => true,
-                'publicly_queryable' => false,
-                'supports' => array( 'title', 'excerpt',  'thumbnail'),
+                'publicly_queryable' => true,
+                'supports' => array( 'title', 'excerpt', 'thumbnail'),
                 'taxonomies' => array( '' ),
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
                 'show_in_menu' => 'simplemag',
                 'rewrite'=>array(
-                    'slug'=>'issue',
+                    'slug' => 'issue',
                     'with_front' => false,
                     'pages' => false
-                    )
+                )
                 
             )
         );
@@ -211,7 +218,6 @@ class SimpleMagazine{
         
         
     }
-    
     
     public function cleanPermalink($str, $replace=array(), $delimiter='-') {
     	if( !empty($replace) ) {
@@ -230,7 +236,6 @@ class SimpleMagazine{
     	return $clean;
     }
     
-    
     public function save_name($name) {
     	global $post;
     	if($post->post_type == 'simplemag-article'){
@@ -239,8 +244,6 @@ class SimpleMagazine{
     	}
     	return $name;
     }
-    
-    
     
     public function simplemag_admin_style_post(){
         $screen = get_current_screen();
@@ -276,12 +279,19 @@ class SimpleMagazine{
 
 
     public function simplemag_template($template)
-    {
-        $t = explode("/",$_SERVER['REQUEST_URI']);
-    
-        if (isset($t[1]) && $t[1] == 'issue') {
-            return dirname(__FILE__) . '/issue.php';
+    {        
+        $post_id = get_the_ID();
+        $post_type = get_post_type( $post_id );
+
+        if ($post_type == 'simplemag-issue') {
+            
+            if (file_exists( get_template_directory() . '/issue.php')) {
+                return get_template_directory() . '/issue.php';
+            } else {
+                return dirname(__FILE__) . '/issue.php';
+            }
         }
+
         return $template;
     }
             
