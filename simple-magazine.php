@@ -167,10 +167,10 @@ class SimpleMagazine {
                     'parent' => 'Parent Article'
                 ),
                 'hierarchical' => false,
-                'public' => false,
+                'public' => true,
                 'publicly_queryable' => true,
                 'show_ui' => true,
-                'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'page-attributes', 'excerpt' ),
+                'supports' => array( 'title', 'editor', 'author', 'thumbnail', 'page-attributes', 'excerpt', 'custom-fields' ),
                 'taxonomies' => array( 'category', 'post_tag' ),
                 'menu_icon' => plugin_dir_url( __FILE__ ).'images/icon-16.png',
                 'has_archive' => true,
@@ -286,9 +286,9 @@ class SimpleMagazine {
         if ($post_type == 'simplemag-issue') {
             
             if (file_exists( get_template_directory() . '/issue.php')) {
-                return get_template_directory() . '/issue.php';
+                $template = get_template_directory() . '/issue.php';
             } else {
-                return dirname(__FILE__) . '/issue.php';
+                $template = dirname(__FILE__) . '/issue.php';
             }
         }
 
