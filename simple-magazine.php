@@ -284,11 +284,22 @@ class SimpleMagazine {
         $post_type = get_post_type( $post_id );
 
         if ($post_type == 'simplemag-issue') {
+
+            if (is_archive()) {
             
-            if (file_exists( get_template_directory() . '/issue.php')) {
-                $template = get_template_directory() . '/issue.php';
-            } else {
-                $template = dirname(__FILE__) . '/issue.php';
+                if (file_exists( get_template_directory() . '/archive-issue.php')) {
+                    $template = get_template_directory() . '/archive-issue.php';
+                }
+
+            }
+            if (!is_archive() or !$template) {
+
+                if (file_exists( get_template_directory() . '/issue.php')) {
+                    $template = get_template_directory() . '/issue.php';
+                } else {
+                    $template = dirname(__FILE__) . '/issue.php';
+                }
+
             }
         }
 
